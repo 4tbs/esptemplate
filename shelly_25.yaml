@@ -131,8 +131,12 @@ binary_sensor:
 #      inverted: True
     name: "${friendly_name} Switch ${name1}"
     internal: true
-    on_press:
+    on_press: # used with spring loaded switches
       - switch.toggle: relay1
+    #on_release: # used with spring loaded switches (inverted)
+    #  - switch.turn_off: relay1
+    #on_state: # used with normal "toggle" switches
+    #  - switch.toggle: relay1
   - platform: gpio
     pin:
       number: GPIO5
@@ -140,8 +144,12 @@ binary_sensor:
 #      inverted: True
     name: "${friendly_name} Switch ${name2}"
     internal: true
-    on_press:
+    on_press: # used with spring loaded switches
       - switch.toggle: relay2
+    #on_release: # used with spring loaded switches (inverted)
+    #  - switch.turn_off: relay2
+    #on_state: # used with normal "toggle" switches
+    #  - switch.toggle: relay2
   - platform: status
     name: "${friendly_name} Status"
     
