@@ -62,7 +62,7 @@ sensor:
     
   # NTC Temperature
   - platform: ntc
-    sensor: ${device_name}_resistance_sensor
+    sensor: ${short_name}_resistance_sensor
     name: "${device_friendly_name} Temperature"
     unit_of_measurement: "°C"
     accuracy_decimals: 1
@@ -73,7 +73,7 @@ sensor:
       reference_temperature: 298.15K
   - platform: resistance
     id: ${short_name}_resistance_sensor
-    sensor: ${device_name}_source_sensor
+    sensor: ${short_name}_source_sensor
     configuration: DOWNSTREAM
     resistor: 32kOhm
   - platform: adc
