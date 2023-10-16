@@ -48,7 +48,7 @@ sensor:
     power:
       name: "${device_friendly_name} Power"
       unit_of_measurement: W
-      id: "${device_name}_power"
+      id: "${short_name}_power"
       icon: mdi:flash-circle
       accuracy_decimals: 0
       filters:
@@ -72,12 +72,12 @@ sensor:
       reference_resistance: 10kOhm
       reference_temperature: 298.15K
   - platform: resistance
-    id: ${device_name}_resistance_sensor
+    id: ${short_name}_resistance_sensor
     sensor: ${device_name}_source_sensor
     configuration: DOWNSTREAM
     resistor: 32kOhm
   - platform: adc
-    id: ${device_name}_source_sensor
+    id: ${short_name}_source_sensor
     pin: A0
     update_interval: 10s
 
