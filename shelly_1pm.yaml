@@ -7,14 +7,14 @@ esphome:
 # Network ---------------------------------------------------------------------
 wifi:
   networks:
-    - ssid: $wlan_ssid
-      password: $wlan_password
+    - ssid: $wifi_ssid
+      password: $wifi_password
       hidden: true
   
   manual_ip:
-    static_ip: $wlan_ip
-    gateway: $wlan_gateway
-    subnet: $wlan_subnet
+    static_ip: $wifi_ip
+    gateway: $wifi_gateway
+    subnet: $wifi_subnet
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
