@@ -11,6 +11,10 @@ substitutions:
   wifi_subnet: "YOUR WIFI SUBNET"
   fallback_pw: "YOUR FALLBACK PASSWORD"
 
+  # Only relevant for Shelly 2.5
+  relay1_friendly_name: "YOUR FRIENDLY NAME"
+  relay2_friendly_name: "YOUR FRIENDLY NAME"
+
 ##### CHANGE ME END #####
 
 
@@ -23,6 +27,8 @@ packages:
     url: https://github.com/4tbs/esptemplate
     ref: main
     files: [shelly_1pm.yaml]
+    #files: [shelly_25.yaml]
+    #files: [shelly_plugs.yaml]
     refresh: 300s
 
 ##### DO NOT CHANGE ANYTHING! #####
