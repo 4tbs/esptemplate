@@ -3,7 +3,6 @@ substitutions:
 ###### CHANGE ME START ######
 
   device_name: "YOUR DEVICE_NAME"
-  short_name: "YOUR SHORT NAME"
   device_friendly_name: "YOUR FRIENDLY NAME"
   wifi_ssid: "YOUR WIFI SSID"
   wifi_password: "YOUR WIFI PASSWORD"
