@@ -1,69 +1,50 @@
 # Identity --------------------------------------------------------------------
-substitutions:
-  name: "sh_1_my_name"
-  friendly_name: "Friendly name"
-  ip: "192.168.5.x"
-
 esphome:
-  name: ${name}
+  name: ${device_name}
   platform: ESP8266
   board: esp01_1m
 
 # Network ---------------------------------------------------------------------
 wifi:
   networks:
-    # Hall BV
-    - ssid: !secret not_wlan_ssid
-      password: !secret not_wlan_pw
-      bssid: !secret wlan_bssid_hall_bv
-      hidden: true
-    # Kontor ÖV
-    - ssid: !secret not_wlan_ssid
-      password: !secret not_wlan_pw
-      bssid: !secret wlan_bssid_kontor_ov
-      hidden: true
-    # Garage
-    - ssid: !secret not_wlan_ssid
-      password: !secret not_wlan_pw
-      bssid: !secret wlan_bssid_garage
+    - ssid: $wifi_ssid
+      password: $wifi_password
       hidden: true
   
   manual_ip:
-    static_ip: ${ip}
-    gateway: 192.168.5.1
-    subnet: 255.255.255.0
+    static_ip: $wifi_ip
+    gateway: $wifi_gateway
+    subnet: $wifi_subnet
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "${name} Fallback"
-    password: !secret fallback_pw
+    ssid: "${device_name} FB"
+    password: $fallback_pw
 
 # Management ------------------------------------------------------------------
 logger:
-
 api:
-
 ota:
 
 # Device ----------------------------------------------------------------------
 switch:
   - platform: gpio
-    name: "${friendly_name}"
+    name: "${device_friendly_name}"
     icon: "mdi:lightbulb"
     pin: GPIO4
     id: relay
 
 sensor:
   - platform: wifi_signal
-    name: "${friendly_name} WiFi Signal"
+    name: "${device_friendly_name} WiFi Signal"
     update_interval: 60s
     
 binary_sensor:
   - platform: status
-    name: "${friendly_name} Status"
+    name: "${device_friendly_name} Status"
   # Binary sensor for the button press
   - platform: gpio
-    name: "${friendly_name} Input"
+    name: "${device_friendly_name} Input"
     pin:
       number: GPIO5
     on_press: # used with spring loaded switches

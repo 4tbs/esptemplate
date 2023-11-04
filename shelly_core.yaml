@@ -15,8 +15,6 @@ substitutions:
   relay1_friendly_name: "YOUR FRIENDLY NAME"
   relay2_friendly_name: "YOUR FRIENDLY NAME"
 
-  # Only relevant for Shelly Plug S
-
 ##### CHANGE ME END #####
 
 
@@ -28,9 +26,11 @@ packages:
   remote_package:
     url: https://github.com/4tbs/esptemplate
     ref: main
+    #files: [shelly_1.yaml]
     files: [shelly_1pm.yaml]
     #files: [shelly_25.yaml]
     #files: [shelly_plugs.yaml]
+    #files: [shelly_rgbw2.yaml]
     refresh: 300s
 
 ##### DO NOT CHANGE ANYTHING! #####

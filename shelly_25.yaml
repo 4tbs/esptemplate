@@ -49,7 +49,7 @@ switch:
 
 sensor:
   - platform: wifi_signal
-    name: "${device_friendly_name} wifi signal"
+    name: "${device_friendly_name} WiFi Signal"
     update_interval: 60s
 
   - platform: ade7953

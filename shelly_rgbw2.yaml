@@ -1,63 +1,40 @@
 # Identity --------------------------------------------------------------------
-substitutions:
-  name: "sh_rgbw2_my_name"
-  friendly_name: "Friendly name"
-  ip: "192.168.5.x"
-
 esphome:
-  name: ${name}
+  name: ${device_name}
   platform: ESP8266
   board: esp01_1m
 
+# Network ---------------------------------------------------------------------
 wifi:
   networks:
-    # Kontor ÖV
-    - ssid: !secret not_wlan_ssid
-      password: !secret not_wlan_pw
-      bssid: !secret wlan_bssid_kontor_ov
-      hidden: true
-    # Hall BV
-    - ssid: !secret not_wlan_ssid
-      password: !secret not_wlan_pw
-      bssid: !secret wlan_bssid_hall_bv
-      hidden: true
-    # Garage
-    - ssid: !secret not_wlan_ssid
-      password: !secret not_wlan_pw
-      bssid: !secret wlan_bssid_garage
+    - ssid: $wifi_ssid
+      password: $wifi_password
       hidden: true
   
   manual_ip:
-    static_ip: ${ip}
-    gateway: 192.168.5.1
-    subnet: 255.255.255.0
+    static_ip: $wifi_ip
+    gateway: $wifi_gateway
+    subnet: $wifi_subnet
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "${name} Fallback"
-    password: !secret fallback_pw
+    ssid: "${device_name} FB"
+    password: $fallback_pw
 
-captive_portal:
-
-# Enable logging
+# Management ------------------------------------------------------------------
 logger:
-
-# Enable Home Assistant API
 api:
-
 ota:
 
-#web_server:
-#  port: 80
-
+# Device ----------------------------------------------------------------------
 sensor:
   - platform: wifi_signal
-    name: "${friendly_name} wifi signal"
+    name: "${device_friendly_name} WiFi Signal"
     update_interval: 60s
 
 light:
   - platform: rgbw
-    name: bathroom_ledstrip_shelly_rgbw2
+    name: "${device_friendly_name} light"
     red: pwm_r
     green: pwm_g
     blue: pwm_b
