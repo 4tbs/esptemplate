@@ -34,12 +34,14 @@ i2c:
 
 switch:
   - platform: gpio
+    restore_mode: RESTORE_DEFAULT_OFF
     name: "${device_friendly_name} ${relay1_friendly_name}"
     icon: "mdi:lightbulb"
     pin: GPIO4
     id: relay1
 
   - platform: gpio
+    restore_mode: RESTORE_DEFAULT_OFF
     name: "${device_friendly_name} ${relay2_friendly_name}"
     icon: "mdi:lightbulb"
     pin: GPIO15
@@ -49,6 +51,7 @@ sensor:
   - platform: wifi_signal
     name: "${device_friendly_name} wifi signal"
     update_interval: 60s
+
   - platform: ade7953
     voltage:
       name: "${device_friendly_name} Voltage"
@@ -99,6 +102,7 @@ sensor:
     sensor: Source
     configuration: DOWNSTREAM
     resistor: 32kOhm
+
   - platform: adc
     id: Source
     pin: A0
@@ -118,6 +122,7 @@ binary_sensor:
     #  - switch.turn_off: relay1
     #on_state: # used with normal "toggle" switches
     #  - switch.toggle: relay1
+
   - platform: gpio
     pin:
       number: GPIO5
@@ -131,6 +136,7 @@ binary_sensor:
     #  - switch.turn_off: relay2
     #on_state: # used with normal "toggle" switches
     #  - switch.toggle: relay2
+    
   - platform: status
     name: "${device_friendly_name} Status"
     
