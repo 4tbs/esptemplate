@@ -21,19 +21,13 @@ wifi:
     ssid: "${device_name} FB"
     password: $fallback_pw
 
+# Management ------------------------------------------------------------------
 captive_portal:
-
-# Enable logging
 logger:
-
-# Enable Home Assistant API
 api:
-
 ota:
 
-#web_server:
-#  port: 80
-
+# Device ----------------------------------------------------------------------
 i2c:
   sda: GPIO12
   scl: GPIO14
@@ -95,6 +89,11 @@ sensor:
       b_constant: 3350
       reference_resistance: 10kOhm
       reference_temperature: 298.15K
+    on_value_range:
+      above: 90
+      then: # Security shutdown by overheating
+        - switch.turn_on: _shutdown
+
   - platform: resistance
     id: Resistance
     sensor: Source
