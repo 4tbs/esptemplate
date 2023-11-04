@@ -1,60 +1,89 @@
+# Substitutions ---------------------------------------------------------------
 substitutions:
-  devicename: shelly_plug_s
-  channel_1: Relay
-  ip: 192.168.xx.xx
-
-  ssid: !secret ssid
-  password: !secret password
-
   # Higher value gives lower watt readout
-  current_res: "0.00290"
+  current_res: "0.000943"
   # Lower value gives lower voltage readout
-  voltage_div: "940"
-  max_power: "2000"
+  voltage_div: "2066"
+  # measure a relatively strong load and enter values measured by the device vs the values your reference measurement provided here
+  # power_cal_meas: "1700.0"
+  # power_cal_real: "1700.0"
+
+  max_current: "10"
+  max_power: "2400"
   max_temp: "70.0"
 
+# Identity --------------------------------------------------------------------
 esphome:
-  name: ${devicename}
+  name: ${device_name}
   platform: ESP8266
-  board: esp8285
+  board: esp01_1m
 
+# Network ---------------------------------------------------------------------
 wifi:
-  ssid: ${ssid}
-  password: ${password}
+  networks:
+    - ssid: $wifi_ssid
+      password: $wifi_password
+      hidden: true
+  
   manual_ip:
-    static_ip: ${ip}
-    gateway: 192.168.xx.xx
-    subnet: 255.255.255.0
-    dns1: 8.8.8.8
-    dns2: 8.8.4.4
+    static_ip: $wifi_ip
+    gateway: $wifi_gateway
+    subnet: $wifi_subnet
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: ${devicename}
-    password: ${password}
-    manual_ip:
-      static_ip: 192.168.100.2
-      gateway: 192.168.100.1
-      subnet: 255.255.255.0
-      dns1: 8.8.8.8
-      dns2: 8.8.4.4
+    ssid: "${device_name} FB"
+    password: $fallback_pw
 
+
+# substitutions:
+#   devicename: shelly_plug_s
+#   channel_1: Relay
+#   ip: 192.168.xx.xx
+
+#   ssid: !secret ssid
+#   password: !secret password
+
+#   # Higher value gives lower watt readout
+#   current_res: "0.00290"
+#   # Lower value gives lower voltage readout
+#   voltage_div: "940"
+#   max_power: "2000"
+#   max_temp: "70.0"
+
+# esphome:
+#   name: ${devicename}
+#   platform: ESP8266
+#   board: esp8285
+
+# wifi:
+#   ssid: ${ssid}
+#   password: ${password}
+#   manual_ip:
+#     static_ip: ${ip}
+#     gateway: 192.168.xx.xx
+#     subnet: 255.255.255.0
+#     dns1: 8.8.8.8
+#     dns2: 8.8.4.4
+
+#   # Enable fallback hotspot (captive portal) in case wifi connection fails
+#   ap:
+#     ssid: ${devicename}
+#     password: ${password}
+#     manual_ip:
+#       static_ip: 192.168.100.2
+#       gateway: 192.168.100.1
+#       subnet: 255.255.255.0
+#       dns1: 8.8.8.8
+#       dns2: 8.8.4.4
+
+# Management ------------------------------------------------------------------
 captive_portal:
-
-# Enable logging
 logger:
-  level: DEBUG
-
-# Enable Home Assistant API
 api:
-  password: ${password}
-
 ota:
-  password: ${password}
 
-web_server:
-  port: 80
-
+# Device ----------------------------------------------------------------------
 time:
   - platform: sntp
     id: my_time
@@ -64,7 +93,7 @@ binary_sensor:
     pin:
       number: GPIO13
       inverted: True
-    name: "${devicename}_button"
+    name: "${device_friendly_name} Input"
     on_press:
       - switch.toggle: relay
 
@@ -81,9 +110,11 @@ output:
 
 switch:
   - platform: gpio
+    restore_mode: RESTORE_DEFAULT_OFF
     pin: GPIO15
     id: relay
-    name: "${channel_1}"
+    name: "${device_friendly_name}"
+    icon: mdi:power-socket-eu
     on_turn_on:
       - output.turn_on: led
     on_turn_off:
@@ -91,13 +122,13 @@ switch:
 
 sensor:
   - platform: wifi_signal
-    name: "${devicename} WiFi Signal"
-    update_interval: 300s
+    name: "${device_friendly_name} WiFi Signal"
+    update_interval: 60s
 
   # NTC Temperature
   - platform: ntc
     sensor: temp_resistance_reading
-    name: ${devicename} temperature
+    name: "${device_friendly_name} Temp"
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     icon: "mdi:thermometer"
@@ -112,19 +143,22 @@ sensor:
           - homeassistant.service:
               service: persistent_notification.create
               data:
-                title: Message from ${devicename}
+                title: Message from ${device_friendly_name}
               data_template:
                 message: Switch turned off because temperature exceeded ${max_temp}°C
+
   - platform: resistance
     id: temp_resistance_reading
     sensor: temp_analog_reading
     configuration: DOWNSTREAM
     resistor: 32kOhm
+
   - platform: adc
     id: temp_analog_reading
     pin: A0
 
   - platform: hlw8012
+    model: BL0937
     sel_pin:
       number: GPIO12
       inverted: true
@@ -133,21 +167,31 @@ sensor:
     current_resistor: ${current_res}
     voltage_divider: ${voltage_div}
     current:
-      name: "${channel_1} current"
+      name: "${device_friendly_name} Current"
       internal: true
       unit_of_measurement: "A"
       accuracy_decimals: 3
-      icon: mdi:flash-outline
+      icon: mdi:flash-circle
+      on_value_range:
+        - above: ${max_current}
+          then:
+            - switch.turn_off: relay
+            - homeassistant.service:
+                service: persistent_notification.create
+                data:
+                  title: Message from ${device_friendly_name}
+                data_template:
+                  message: Switch turned off because current exceeded ${max_current}A
     voltage:
-      name: "${channel_1} voltage"
+      name: "${device_friendly_name} Voltage"
       internal: true
       unit_of_measurement: "V"
-      icon: mdi:flash-outline
+      icon: mdi:flash-circle
     power:
-      name: "${channel_1} power"
+      name: "${device_friendly_name} Power"
       id: power
       unit_of_measurement: "W"
-      icon: mdi:flash-outline
+      icon: mdi:flash-circle
       on_value_range:
         - above: ${max_power}
           then:
@@ -155,13 +199,13 @@ sensor:
             - homeassistant.service:
                 service: persistent_notification.create
                 data:
-                  title: Message from ${devicename}
+                  title: Message from ${device_friendly_name}
                 data_template:
                   message: Switch turned off because power exceeded ${max_power}W
     update_interval: 10s
 
   - platform: total_daily_energy
-    name: "${channel_1} daily energy"
+    name: "${device_friendly_name} Daily Energy"
     power_id: power
     filters:
       # Multiplication factor from W to kW is 0.001
