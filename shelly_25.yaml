@@ -95,7 +95,8 @@ sensor:
     on_value_range:
       above: 90
       then: # Security shutdown by overheating
-        - switch.turn_on: _shutdown
+        - switch.turn_off: relay1
+        - switch.turn_off: relay2
 
   - platform: resistance
     id: Resistance
@@ -136,7 +137,7 @@ binary_sensor:
     #  - switch.turn_off: relay2
     #on_state: # used with normal "toggle" switches
     #  - switch.toggle: relay2
-    
+
   - platform: status
     name: "${device_friendly_name} Status"
     
