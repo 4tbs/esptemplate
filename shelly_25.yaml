@@ -52,7 +52,7 @@ sensor:
     name: "${device_friendly_name} WiFi Signal"
     update_interval: 60s
 
-  - platform: ade7953
+  - platform: ade7953_i2c
     voltage:
       name: "${device_friendly_name} Voltage"
       icon: mdi:flash-circle
