@@ -1,0 +1,131 @@
+substitutions:
+  devicename: "shelly-plus-2pm"
+  output_name_1: "Output 1"
+  output_name_2: "Output 2"
+  input_name_1: "Input 1"
+  input_name_2: "Input 2"
+
+# For PCB v0.1.9 with dual core ESP32
+esphome:
+  name: ${devicename}
+
+esp32:
+  board: esp32doit-devkit-v1
+  framework:
+    type: arduino
+
+logger:
+
+api:
+
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+i2c:
+  sda: GPIO26
+  scl: GPIO25
+
+output:
+  - platform: gpio
+    id: "relay_output_1"
+    pin: GPIO12
+  - platform: gpio
+    id: "relay_output_2"
+    pin: GPIO13
+
+switch:
+  - platform: output
+    id: "relay_1"
+    name: "${output_name_1}"
+    output: "relay_output_1"
+  - platform: output
+    id: "relay_2"
+    name: "${output_name_2}"
+    output: "relay_output_2"
+
+binary_sensor:
+  # Button on device
+  - platform: gpio
+    name: "${devicename} Button"
+    pin:
+      number: GPIO4
+      inverted: yes
+      mode:
+        input: true
+        pullup: true
+    internal: true
+  # Input 1
+  - platform: gpio
+    name: "${input_name_1}"
+    pin: GPIO5
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      then:
+        - switch.toggle: relay_1
+    internal: true
+  # Input 2
+  - platform: gpio
+    name: "${input_name_2}"
+    pin: GPIO18
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      then:
+        - switch.toggle: relay_2
+    internal: true
+
+sensor:
+  # Power Sensor
+  - platform: ade7953_i2c
+    irq_pin: GPIO27
+    voltage:
+      name: "${devicename} Voltage"
+      entity_category: 'diagnostic'
+    current_a:
+      name: "${output_name_2} Current"
+      entity_category: 'diagnostic'
+    active_power_a:
+      name: "${output_name_2} Power"
+      id: power_channel_2
+      entity_category: 'diagnostic'
+      filters:
+        - multiply: -1
+    current_b:
+      name: "${output_name_1} Current"
+      entity_category: 'diagnostic'
+    active_power_b:
+      name: "${output_name_1} Power"
+      id: power_channel_1
+      entity_category: 'diagnostic'
+    update_interval: 10s
+
+  # Internal NTC Temperature sensor
+  - platform: ntc
+    sensor: temp_resistance_reading
+    name: "${devicename} Temperature"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    icon: "mdi:thermometer"
+    entity_category: 'diagnostic'
+    calibration:
+      b_constant: 3350
+      reference_resistance: 4.7kOhm
+      reference_temperature: 298.15K
+
+  # Required for NTC sensor
+  - platform: resistance
+    id: temp_resistance_reading
+    sensor: temp_analog_reading
+    configuration: DOWNSTREAM
+    resistor: 5.6kOhm
+
+  # Required for NTC sensor
+  - platform: adc
+    id: temp_analog_reading
+    pin: GPIO35
+    attenuation: 11db
+    update_interval: 10s
