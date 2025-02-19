@@ -26,6 +26,7 @@ wifi:
 logger:
 api:
 ota:
+  platform: esphome
 
 # Device ----------------------------------------------------------------------
 sensor:
